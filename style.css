@@ -14,23 +14,39 @@ body { font-family: 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; color: 
 .app-container { display: grid; grid-template-columns: 320px 1fr; min-height: 100vh; }
 
 /* Sidebar Styling */
-.sidebar { background: white; padding: 30px; border-right: 1px solid #ddd; display: flex; flex-direction: column; gap: 30px; }
+.sidebar { 
+    background: white; 
+    padding: 30px; 
+    border-right: 1px solid #ddd; 
+    display: flex; 
+    flex-direction: column; 
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
 .brand h2 { color: var(--primary); font-size: 24px; }
-.brand p { font-size: 12px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
+.brand p { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
 
-h3 { font-size: 14px; margin-bottom: 15px; text-transform: uppercase; color: var(--gray); border-bottom: 1px solid #eee; padding-bottom: 5px; }
+h3 { font-size: 12px; margin-bottom: 15px; text-transform: uppercase; color: var(--gray); border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 20px; }
 
-.input-group label { display: block; font-size: 12px; font-weight: bold; margin: 10px 0 5px; }
-input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 10px; font-size: 14px; }
+.input-group label { display: block; font-size: 11px; font-weight: bold; margin: 8px 0 4px; color: var(--dark); }
+input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 8px; font-size: 14px; }
 
 .extra-field { display: none; background: #f8f9ff; padding: 10px; border-radius: 6px; border-left: 3px solid var(--primary); margin-bottom: 10px; }
 
 /* Buttons */
 button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 5px; }
 .btn-add { background: var(--dark); color: white; }
-.btn-run { background: var(--primary); color: white; margin-top: 15px; }
-.btn-clear { background: #eee; color: var(--dark); }
+.btn-run { background: var(--primary); color: white; margin-top: 10px; }
+.btn-clear { background: #eee; color: var(--dark); margin-top: 5px; }
 button:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* Team Section */
+.team-section { margin-top: auto; padding-top: 20px; border-top: 1px dotted #ccc; }
+.team-list { list-style: none; padding: 0; }
+.team-list li { font-size: 13px; color: var(--dark); margin-bottom: 6px; padding-left: 15px; position: relative; font-weight: 500; }
+.team-list li::before { content: "•"; color: var(--primary); position: absolute; left: 0; font-weight: bold; }
 
 /* Main Content Area */
 .main-content { padding: 40px; }
@@ -46,11 +62,11 @@ button:hover { opacity: 0.9; transform: translateY(-1px); }
 
 /* Table */
 table { width: 100%; border-collapse: collapse; }
-th { text-align: left; padding: 12px; background: var(--light); font-size: 12px; color: var(--gray); text-transform: uppercase; }
+th { text-align: left; padding: 12px; background: var(--light); font-size: 11px; color: var(--gray); text-transform: uppercase; }
 td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
 
 /* Stats Grid */
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.stat-card { background: white; padding: 20px; border-radius: 12px; text-align: center; border-bottom: 4px solid var(--success); }
-.stat-card small { color: var(--gray); }
-.stat-card h2 { color: var(--primary); margin-top: 5px; }
+.stat-card { background: white; padding: 20px; border-radius: 12px; text-align: center; border-bottom: 4px solid var(--success); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+.stat-card small { color: var(--gray); font-size: 12px; }
+.stat-card h2 { color: var(--primary); margin-top: 5px; font-size: 28px; }
