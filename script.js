@@ -1,175 +1,110 @@
-let processes = [];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CPU Scheduling Simulator Pro</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="brand">
+                <h2>OS Scheduler</h2>
+                <p>Project Dashboard</p>
+            </div>
 
-function updateUI() {
-    const algo = document.getElementById('algoSelector').value;
-    document.getElementById('priorityInput').style.display = (algo === 'Priority') ? 'block' : 'none';
-    document.getElementById('quantumInput').style.display = (algo === 'RR') ? 'block' : 'none';
-}
+            <div class="input-section">
+                <h3>Add Process</h3>
+                <div class="input-group">
+                    <label>Process ID</label>
+                    <input type="text" id="pid" placeholder="P1, P2...">
+                    
+                    <label>Arrival Time</label>
+                    <input type="number" id="at" value="0" min="0">
+                    
+                    <label>Burst Time</label>
+                    <input type="number" id="bt" value="1" min="1">
 
-function addProcess() {
-    const pid = document.getElementById('pid').value || `P${processes.length + 1}`;
-    const at = parseInt(document.getElementById('at').value);
-    const bt = parseInt(document.getElementById('bt').value);
-    const priority = parseInt(document.getElementById('priority').value) || 0;
+                    <div id="priorityInput" class="extra-field">
+                        <label>Priority (Lower = Higher)</label>
+                        <input type="number" id="priority" value="0">
+                    </div>
+                </div>
+                <button onclick="addProcess()" class="btn-add">Add to Queue</button>
+            </div>
 
-    if (isNaN(at) || isNaN(bt)) return alert("Please enter valid times");
+            <div class="algo-section">
+                <h3>Algorithm Settings</h3>
+                <select id="algoSelector" onchange="updateUI()">
+                    <option value="FCFS">First Come First Served</option>
+                    <option value="SJF">SJF (Non-Preemptive)</option>
+                    <option value="SRTF">SRTF (Preemptive SJF)</option>
+                    <option value="Priority">Priority (Non-Preemptive)</option>
+                    <option value="RR">Round Robin</option>
+                </select>
 
-    processes.push({ pid, at, bt, priority });
-    alert(`Process ${pid} added.`);
-    document.getElementById('pid').value = "";
-}
+                <div id="quantumInput" class="extra-field">
+                    <label>Time Quantum</label>
+                    <input type="number" id="quantum" value="2" min="1">
+                </div>
 
-function calculate() {
-    if (processes.length === 0) return alert("Add some processes first!");
-    
-    const algo = document.getElementById('algoSelector').value;
-    let result;
+                <button onclick="calculate()" class="btn-run">Run Simulation</button>
+                <button onclick="clearAll()" class="btn-clear">Reset All</button>
+            </div>
 
-    if (algo === "FCFS") result = solveFCFS();
-    else if (algo === "SJF") result = solveSJF();
-    else if (algo === "SRTF") result = solveSRTF();
-    else if (algo === "Priority") result = solvePriority();
-    else if (algo === "RR") result = solveRR();
+            <div class="team-section">
+                <h3>Presented by</h3>
+                <ul class="team-list">
+                    <li>24CSR019 - AMIRTHAMOZHI V S</li>
+                    <li>24CSR029 - ASMA THASNIM H</li>
+                    <li>24CSR057 - DHARANEESH S C</li>
+                </ul>
+            </div>
+        </aside>
 
-    render(result);
-}
+        <main class="main-content">
+            <div id="welcome-msg">
+                <h1>CPU Scheduling Simulator</h1>
+                <p>Enter processes on the left and select an algorithm to begin.</p>
+            </div>
 
-function solveFCFS() {
-    let local = [...processes].sort((a, b) => a.at - b.at);
-    let time = 0, gantt = [];
-    local.forEach(p => {
-        if (time < p.at) { gantt.push({id: 'Idle', start: time, end: p.at}); time = p.at; }
-        let start = time;
-        time += p.bt;
-        p.ct = time; p.tat = p.ct - p.at; p.wt = p.tat - p.bt;
-        gantt.push({id: p.pid, start, end: time});
-    });
-    return { processes: local, gantt };
-}
+            <div id="result-section" class="hidden">
+                <div class="card">
+                    <h3>Gantt Chart</h3>
+                    <div id="gantt-chart-wrapper" class="gantt-wrapper"></div>
+                </div>
 
-function solveSJF() {
-    let local = processes.map(p => ({...p}));
-    let time = 0, completed = 0, n = local.length, gantt = [];
-    let isDone = Array(n).fill(false);
+                <div class="card table-card">
+                    <h3>Calculated Metrics</h3>
+                    <table id="statsTable">
+                        <thead>
+                            <tr>
+                                <th>PID</th>
+                                <th>Arrival</th>
+                                <th>Burst</th>
+                                <th>Finish</th>
+                                <th>Turnaround</th>
+                                <th>Waiting</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
 
-    while (completed < n) {
-        let idx = -1, minBT = Infinity;
-        for (let i = 0; i < n; i++) {
-            if (local[i].at <= time && !isDone[i] && local[i].bt < minBT) {
-                minBT = local[i].bt; idx = i;
-            }
-        }
-        if (idx === -1) { time++; continue; }
-        let start = time;
-        time += local[idx].bt;
-        local[idx].ct = time; local[idx].tat = time - local[idx].at; local[idx].wt = local[idx].tat - local[idx].bt;
-        isDone[idx] = true; completed++;
-        gantt.push({id: local[idx].pid, start, end: time});
-    }
-    return { processes: local, gantt };
-}
-
-function solveSRTF() {
-    let local = processes.map(p => ({...p, rem: p.bt}));
-    let time = 0, completed = 0, n = local.length, gantt = [];
-    let lastId = null;
-
-    while (completed < n) {
-        let idx = -1, minRem = Infinity;
-        for (let i = 0; i < n; i++) {
-            if (local[i].at <= time && local[i].rem > 0 && local[i].rem < minRem) {
-                minRem = local[i].rem; idx = i;
-            }
-        }
-        if (idx === -1) { time++; continue; }
-
-        if (lastId === local[idx].pid) {
-            gantt[gantt.length - 1].end++;
-        } else {
-            gantt.push({id: local[idx].pid, start: time, end: time + 1});
-            lastId = local[idx].pid;
-        }
-
-        local[idx].rem--;
-        time++;
-        if (local[idx].rem === 0) {
-            local[idx].ct = time; local[idx].tat = time - local[idx].at; local[idx].wt = local[idx].tat - local[idx].bt;
-            completed++; lastId = null;
-        }
-    }
-    return { processes: local, gantt };
-}
-
-function solveRR() {
-    const q = parseInt(document.getElementById('quantum').value);
-    let local = processes.map(p => ({...p, rem: p.bt}));
-    let time = 0, gantt = [], queue = [], completed = 0;
-    local.sort((a,b) => a.at - b.at);
-    
-    let visited = new Set();
-    time = local[0].at;
-    queue.push(local[0]);
-    visited.add(0);
-
-    while (completed < local.length) {
-        let p = queue.shift();
-        if (!p) { time++; local.forEach((lp, i) => { if(lp.at <= time && !visited.has(i)) { queue.push(lp); visited.add(i); }}); continue; }
-        
-        let start = time;
-        let take = Math.min(p.rem, q);
-        p.rem -= take;
-        time += take;
-        gantt.push({id: p.pid, start, end: time});
-
-        local.forEach((lp, i) => {
-            if (!visited.has(i) && lp.at <= time) { visited.add(i); queue.push(lp); }
-        });
-        if (p.rem > 0) queue.push(p);
-        else { p.ct = time; p.tat = p.ct - p.at; p.wt = p.tat - p.bt; completed++; }
-    }
-    return { processes: local, gantt };
-}
-
-function solvePriority() {
-    let local = processes.map(p => ({...p}));
-    let time = 0, completed = 0, n = local.length, gantt = [];
-    let isDone = Array(n).fill(false);
-    while (completed < n) {
-        let idx = -1, minPrio = Infinity;
-        for (let i = 0; i < n; i++) {
-            if (local[i].at <= time && !isDone[i] && local[i].priority < minPrio) {
-                minPrio = local[i].priority; idx = i;
-            }
-        }
-        if (idx === -1) { time++; continue; }
-        let start = time; time += local[idx].bt;
-        local[idx].ct = time; local[idx].tat = time - local[idx].at; local[idx].wt = local[idx].tat - local[idx].bt;
-        isDone[idx] = true; completed++;
-        gantt.push({id: local[idx].pid, start, end: time});
-    }
-    return { processes: local, gantt };
-}
-
-function render(res) {
-    document.getElementById('welcome-msg').classList.add('hidden');
-    document.getElementById('result-section').classList.remove('hidden');
-    let gHtml = "", tHtml = "", tWT = 0, tTAT = 0;
-    
-    const totalTime = res.gantt[res.gantt.length - 1].end;
-    res.gantt.forEach(g => {
-        let width = ((g.end - g.start) / totalTime) * 100;
-        gHtml += `<div class="gantt-block ${g.id==='Idle'?'idle-bg':'p-bg'}" style="width:${width}%">${g.id}<span>${g.end}</span></div>`;
-    });
-
-    res.processes.forEach(p => {
-        tWT += p.wt; tTAT += p.tat;
-        tHtml += `<tr><td>${p.pid}</td><td>${p.at}</td><td>${p.bt}</td><td>${p.ct}</td><td>${p.tat}</td><td>${p.wt}</td></tr>`;
-    });
-
-    document.getElementById('gantt-chart-wrapper').innerHTML = gHtml;
-    document.getElementById('tableBody').innerHTML = tHtml;
-    document.getElementById('avgWT').innerText = (tWT / res.processes.length).toFixed(2);
-    document.getElementById('avgTAT').innerText = (tTAT / res.processes.length).toFixed(2);
-}
-
-function clearAll() { processes = []; location.reload(); }
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <small>Avg Waiting Time</small>
+                        <h2 id="avgWT">0.00</h2>
+                    </div>
+                    <div class="stat-card">
+                        <small>Avg Turnaround Time</small>
+                        <h2 id="avgTAT">0.00</h2>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
