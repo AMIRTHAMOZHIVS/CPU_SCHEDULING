@@ -1,72 +1,198 @@
 :root {
-    --primary: #4361ee;
-    --secondary: #3f37c9;
-    --success: #4cc9f0;
-    --danger: #f72585;
-    --dark: #212529;
-    --gray: #6c757d;
-    --light: #f8f9fa;
+    --bg-dark: #0a0a0f;
+    --panel-dark: #12121e;
+    --text-main: #e2e8f0;
+    --text-muted: #64748b;
+    --neon-blue: #00f0ff;
+    --neon-purple: #bd00ff;
+    --neon-green: #39ff14;
+    --neon-rose: #ff0055;
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --anim-speed: 0.6s;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Segoe UI', Roboto, sans-serif; background: #f0f2f5; color: var(--dark); }
+body { 
+    font-family: 'Courier New', Courier, monospace; 
+    background: var(--bg-dark); 
+    color: var(--text-main); 
+    overflow-x: hidden;
+    letter-spacing: 0.5px;
+}
 
-.app-container { display: grid; grid-template-columns: 320px 1fr; min-height: 100vh; }
+.app-container { display: grid; grid-template-columns: 340px 1fr; min-height: 100vh; }
 
-/* Sidebar Styling */
+/* Dashboard Terminal Control Panel */
 .sidebar { 
-    background: white; 
-    padding: 30px; 
-    border-right: 1px solid #ddd; 
+    background: var(--panel-dark); 
+    padding: 30px 24px; 
+    border-right: 2px solid #1e1e30; 
     display: flex; 
     flex-direction: column; 
     height: 100vh;
     position: sticky;
     top: 0;
+    z-index: 10;
+}
+.brand h2 { color: var(--neon-blue); font-size: 24px; font-weight: 900; text-shadow: 0 0 10px rgba(0, 240, 255, 0.3); }
+.brand p { font-size: 10px; color: var(--text-muted); font-weight: bold; margin-top: 4px; }
+
+.section-title { font-size: 12px; font-weight: bold; color: var(--text-main); margin: 25px 0 15px 0; border-bottom: 1px solid #1e1e30; padding-bottom: 6px; }
+.section-title span { color: var(--neon-purple); }
+
+.field-box { margin-bottom: 12px; }
+.field-box label { display: block; font-size: 10px; font-weight: bold; margin-bottom: 6px; color: var(--text-muted); }
+
+input, select { 
+    width: 100%; 
+    padding: 12px; 
+    background: #0d0d16; 
+    border: 1px solid #27273f; 
+    border-radius: 6px; 
+    color: var(--text-main); 
+    font-size: 13px; 
+    font-family: inherit;
+    transition: all 0.3s;
+}
+input:focus, select:focus { 
+    border-color: var(--neon-blue); 
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.2); 
+    outline: none; 
 }
 
-.brand h2 { color: var(--primary); font-size: 24px; }
-.brand p { font-size: 11px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; }
+.extra-field { display: none; }
 
-h3 { font-size: 12px; margin-bottom: 15px; text-transform: uppercase; color: var(--gray); border-bottom: 1px solid #eee; padding-bottom: 5px; margin-top: 20px; }
+/* Specialized Buttons */
+.btn { 
+    width: 100%; 
+    padding: 14px; 
+    border: none; 
+    border-radius: 6px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    font-family: inherit;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+    margin-top: 8px;
+    letter-spacing: 1px;
+}
+.btn-primary { background: #1e1e30; color: var(--neon-blue); border: 1px solid var(--neon-blue); }
+.btn-primary:hover { background: var(--neon-blue); color: #000; box-shadow: 0 0 15px rgba(0,240,255,0.4); }
 
-.input-group label { display: block; font-size: 11px; font-weight: bold; margin: 8px 0 4px; color: var(--dark); }
-input, select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 8px; font-size: 14px; }
+.btn-accent { background: linear-gradient(135deg, var(--neon-purple), #7209b7); color: white; margin-top: 15px; }
+.btn-accent:hover { transform: translateY(-1px); box-shadow: 0 0 20px rgba(189, 0, 255, 0.5); }
 
-.extra-field { display: none; background: #f8f9ff; padding: 10px; border-radius: 6px; border-left: 3px solid var(--primary); margin-bottom: 10px; }
+.btn-danger { background: transparent; color: var(--neon-rose); border: 1px solid var(--neon-rose); }
+.btn-danger:hover { background: var(--neon-rose); color: white; box-shadow: 0 0 15px rgba(255,0,85,0.4); }
 
-/* Buttons */
-button { width: 100%; padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 5px; }
-.btn-add { background: var(--dark); color: white; }
-.btn-run { background: var(--primary); color: white; margin-top: 10px; }
-.btn-clear { background: #eee; color: var(--dark); margin-top: 5px; }
-button:hover { opacity: 0.9; transform: translateY(-1px); }
+/* Operator Display System */
+.team-section { margin-top: auto; padding-top: 20px; }
+.team-list { list-style: none; }
+.team-list li { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; font-weight: bold; }
 
-/* Team Section */
-.team-section { margin-top: auto; padding-top: 20px; border-top: 1px dotted #ccc; }
-.team-list { list-style: none; padding: 0; }
-.team-list li { font-size: 13px; color: var(--dark); margin-bottom: 6px; padding-left: 15px; position: relative; font-weight: 500; }
-.team-list li::before { content: "•"; color: var(--primary); position: absolute; left: 0; font-weight: bold; }
+/* Main Glass-Morphism Content Space */
+.main-content { padding: 40px; display: flex; flex-direction: column; gap: 30px; background: radial-gradient(circle at 80% 20%, #131326 0%, var(--bg-dark) 100%); }
+.glass-card { 
+    background: rgba(18, 18, 30, 0.6); 
+    backdrop-filter: blur(12px); 
+    border: 1px solid var(--glass-border); 
+    padding: 25px; 
+    border-radius: 12px; 
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+.card-header { font-size: 12px; font-weight: bold; color: var(--neon-blue); margin-bottom: 15px; border-left: 3px solid var(--neon-blue); padding-left: 10px; letter-spacing: 1px; }
 
-/* Main Content Area */
-.main-content { padding: 40px; }
-.card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); margin-bottom: 25px; }
-.hidden { display: none; }
+.terminal-text h1 { font-size: 28px; font-weight: 900; color: #fff; text-shadow: 0 0 15px rgba(255,255,255,0.1); }
+.terminal-text p { color: var(--neon-green); margin-top: 10px; font-size: 14px; }
 
-/* Gantt Chart */
-.gantt-wrapper { display: flex; width: 100%; height: 50px; border-radius: 8px; overflow: hidden; margin-top: 10px; border: 1px solid #ccc; background: #eee; }
-.gantt-block { display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; position: relative; font-size: 12px; min-width: 20px; border-right: 1px solid rgba(255,255,255,0.2); }
-.gantt-block span { position: absolute; bottom: -20px; right: 0; color: var(--dark); font-weight: normal; font-size: 10px; }
-.p-bg { background: var(--primary); }
-.idle-bg { background: #dee2e6; color: #495057; }
+.blink { animation: structuralBlink 1.5s infinite; }
+.hidden { display: none !important; }
 
-/* Table */
-table { width: 100%; border-collapse: collapse; }
-th { text-align: left; padding: 12px; background: var(--light); font-size: 11px; color: var(--gray); text-transform: uppercase; }
-td { padding: 12px; border-bottom: 1px solid #eee; font-size: 14px; }
+/* Dynamic Animated Gantt Track layout */
+/* --- ADVANCED KINEMATICS ENGINE --- */
 
-/* Stats Grid */
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-.stat-card { background: white; padding: 20px; border-radius: 12px; text-align: center; border-bottom: 4px solid var(--success); box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-.stat-card small { color: var(--gray); font-size: 12px; }
-.stat-card h2 { color: var(--primary); margin-top: 5px; font-size: 28px; }
+.gantt-wrapper {
+    display: flex;
+    width: 100%;
+    height: 60px; /* Marginally taller for visual weight */
+    border-radius: 8px;
+    overflow: hidden;
+    background: #09090e;
+    border: 2px solid #1f1f35;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+    position: relative;
+}
+
+.gantt-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    height: 100%;
+    border-right: 1px solid rgba(0, 0, 0, 0.3);
+    transform-origin: left center;
+    
+    /* Forces the block to sit invisible until its individual delay timer hits */
+    opacity: 0; 
+    transform: scaleX(0);
+    
+    /* Using a distinct ease-out cubic curve for organic deceleration look */
+    animation: advancedGrow 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    animation-delay: var(--block-delay);
+}
+
+.block-label {
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    opacity: 0;
+    animation: elementFadeIn 0.3s ease-out forwards;
+    /* Waits until the block expansion is almost complete before showing text */
+    animation-delay: calc(var(--block-delay) + 0.3s); 
+}
+
+.time-stamp {
+    position: absolute;
+    bottom: -24px;
+    right: 4px;
+    color: var(--neon-blue);
+    font-weight: bold;
+    font-size: 11px;
+    opacity: 0;
+    animation: elementFadeIn 0.3s ease-out forwards;
+    animation-delay: calc(var(--block-delay) + 0.4s);
+}
+
+/* --- KEYFRAME ARCHITECTURES --- */
+
+@keyframes advancedGrow {
+    0% {
+        transform: scaleX(0);
+        opacity: 0;
+        filter: brightness(3) saturate(1.5); /* Glowing flash on creation */
+    }
+    40% {
+        opacity: 1;
+    }
+    100% {
+        transform: scaleX(1);
+        opacity: 1;
+        filter: brightness(1) saturate(1);
+    }
+}
+
+@keyframes elementFadeIn {
+    from { opacity: 0; transform: translateY(-3px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes tableRowFadeIn {
+    from {
+        opacity: 0;
+        transform: translateX(-15px);
+        background: rgba(0, 240, 255, 0.05); /* Flash line tint on row insert */
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
