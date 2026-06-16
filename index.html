@@ -3,89 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CPU Scheduling Simulator Pro</title>
+    <title>Quantum CPU Scheduler Core</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="app-container">
         <aside class="sidebar">
             <div class="brand">
-                <h2>OS Scheduler</h2>
-                <p>Project Dashboard</p>
+                <h2>CORE_OS //</h2>
+                <p>TASK SCHEDULER MATRIX</p>
             </div>
 
-            <div class="input-section">
-                <h3>Add Process</h3>
+            <div class="panel-section">
+                <div class="section-title"><span>[01]</span> INITIALIZE PROCESS</div>
                 <div class="input-group">
-                    <label>Process ID</label>
-                    <input type="text" id="pid" placeholder="P1, P2...">
-                    
-                    <label>Arrival Time</label>
-                    <input type="number" id="at" value="0" min="0">
-                    
-                    <label>Burst Time</label>
-                    <input type="number" id="bt" value="1" min="1">
+                    <div class="field-box">
+                        <label>PROCESS TAG</label>
+                        <input type="text" id="pid" placeholder="e.g., P1">
+                    </div>
+                    <div class="field-box">
+                        <label>ARRIVAL TIME (ms)</label>
+                        <input type="number" id="at" value="0" min="0">
+                    </div>
+                    <div class="field-box">
+                        <label>BURST TIME (ms)</label>
+                        <input type="number" id="bt" value="1" min="1">
+                    </div>
 
-                    <div id="priorityInput" class="extra-field">
-                        <label>Priority (Lower = Higher)</label>
+                    <div id="priorityInput" class="field-box extra-field">
+                        <label>PRIORITY LEVEL</label>
                         <input type="number" id="priority" value="0">
                     </div>
                 </div>
-                <button onclick="addProcess()" class="btn-add">Add to Queue</button>
+                <button onclick="addProcess()" class="btn btn-primary">ADD TO READY QUEUE</button>
             </div>
 
-            <div class="algo-section">
-                <h3>Algorithm Settings</h3>
+            <div class="panel-section">
+                <div class="section-title"><span>[02]</span> SCHEDULING STRATEGY</div>
                 <select id="algoSelector" onchange="updateUI()">
-                    <option value="FCFS">First Come First Served</option>
+                    <option value="FCFS">First Come First Served (FCFS)</option>
                     <option value="SJF">SJF (Non-Preemptive)</option>
                     <option value="SRTF">SRTF (Preemptive SJF)</option>
                     <option value="Priority">Priority (Non-Preemptive)</option>
-                    <option value="RR">Round Robin</option>
+                    <option value="RR">Round Robin (Time Sharing)</option>
                 </select>
 
-                <div id="quantumInput" class="extra-field">
-                    <label>Time Quantum</label>
+                <div id="quantumInput" class="field-box extra-field">
+                    <label>TIME QUANTUM (q)</label>
                     <input type="number" id="quantum" value="2" min="1">
                 </div>
 
-                <button onclick="calculate()" class="btn-run">Run Simulation</button>
-                <button onclick="clearAll()" class="btn-clear">Reset All</button>
+                <button onclick="calculate()" class="btn btn-accent glow-effect">BOOT SIMULATION ENGINE</button>
+                <button onclick="clearAll()" class="btn btn-danger">WIPE METRICS</button>
             </div>
 
             <div class="team-section">
-                <h3>Presented by</h3>
+                <div class="section-title">OPERATORS</div>
                 <ul class="team-list">
-                    <li>24CSR019 - AMIRTHAMOZHI V S</li>
-                    <li>24CSR029 - ASMA THASNIM H</li>
-                    <li>24CSR057 - DHARANEESH S C</li>
+                    <li>Amirthamozhi  V S</li>
+                    <li>Asmathasnim H</li>
+                    <li>Dharaneesh S C</li>
                 </ul>
             </div>
         </aside>
 
         <main class="main-content">
-            <div id="welcome-msg">
-                <h1>CPU Scheduling Simulator</h1>
-                <p>Enter processes on the left and select an algorithm to begin.</p>
+            <div id="welcome-msg" class="glass-card terminal-text">
+                <h1>&gt;_ KERNEL_SCHEDULER_SIMULATOR</h1>
+                <p class="blink">SYSTEM STANDBY. INPUT PROCESS ARRAYS TO OBSERVE CPU ENGINE RESPONSE LAYERS...</p>
             </div>
 
             <div id="result-section" class="hidden">
-                <div class="card">
-                    <h3>Gantt Chart</h3>
+                <div class="glass-card">
+                    <div class="card-header">GANTT TIME MATRIX</div>
                     <div id="gantt-chart-wrapper" class="gantt-wrapper"></div>
                 </div>
 
-                <div class="card table-card">
-                    <h3>Calculated Metrics</h3>
+                <div class="glass-card table-container">
+                    <div class="card-header">METRIC ANALYSIS OUTPUT</div>
                     <table id="statsTable">
                         <thead>
                             <tr>
                                 <th>PID</th>
-                                <th>Arrival</th>
-                                <th>Burst</th>
-                                <th>Finish</th>
-                                <th>Turnaround</th>
-                                <th>Waiting</th>
+                                <th>Arrival Time</th>
+                                <th>Burst Time</th>
+                                <th>Completion Time</th>
+                                <th>Turnaround Time</th>
+                                <th>Waiting Time</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody"></tbody>
@@ -93,16 +97,22 @@
                 </div>
 
                 <div class="stats-grid">
-                    <div class="stat-card">
-                        <small>Avg Waiting Time</small>
-                        <h2 id="avgWT">0.00</h2>
+                    <div class="glass-card stat-card wt-glow">
+                        <small>MEAN WAITING PROFILE</small>
+                        <h2 id="avgWT">0.00ms</h2>
                     </div>
-                    <div class="stat-card">
-                        <small>Avg Turnaround Time</small>
-                        <h2 id="avgTAT">0.00</h2>
+                    <div class="glass-card stat-card tat-glow">
+                        <small>MEAN TURNAROUND PROFILE</small>
+                        <h2 id="avgTAT">0.00ms</h2>
                     </div>
                 </div>
             </div>
+
+            <section class="glass-card theory-section">
+                <div class="card-header" id="theory-title">STRATEGY MATRIX METADATA</div>
+                <p id="theory-desc" class="theory-paragraph"></p>
+                <div id="theory-badges" style="margin-top: 15px;"></div>
+            </section>
         </main>
     </div>
     <script src="script.js"></script>
